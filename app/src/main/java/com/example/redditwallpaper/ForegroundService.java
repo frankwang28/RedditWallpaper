@@ -7,14 +7,13 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,13 +21,19 @@ import java.util.TimerTask;
 
 public class ForegroundService extends Service {
 
+    public static SharedPreferences sharedPreferences;
+    public static final String preference = "pref";
+
     Timer timer = new Timer();
     int hour = 12;
-    int interval = 1000 * 60 * 60 * hour;
+    int interval = 1000 * 60 * 60;
 
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
     @Override
     public void onCreate() {
+        Context context = getApplicationContext();
+        sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
+        hour = sharedPreferences.getInt("hour", 12);
         super.onCreate();
     }
     @Override
@@ -39,24 +44,30 @@ public class ForegroundService extends Service {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                MainActivity.fullWallpaper();
-
+                if (hour == 1) {
+                    MainActivity.fullWallpaper();
+                    hour = 12;
+                    Context context = getApplicationContext();
+                    sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("hour", hour);
+                } else{
+                    hour -= 1;
+                    Context context = getApplicationContext();
+                    sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("hour", hour);
+                }
 
                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                Calendar c = Calendar.getInstance();
-                System.out.println("Current time => "+c.getTime());
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                String formattedDate = df.format(c.getTime());
-
-                Notification notification1 = notification_builder("Wallpaper was last set at " + formattedDate + ". Next wallpaper will be set in " + Integer.toString(hour) + " hours.");
+                Notification notification1 = notification_builder("Wallpaper to be set in " + Integer.toString(hour) + " hours.");
                 mNotificationManager.notify(1, notification1);
             }}, interval, interval);
 
         startForeground(1, notification);
         //do heavy work on a background thread
         //stopSelf();
-        return START_NOT_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     public Notification notification_builder(String text) {
@@ -74,6 +85,10 @@ public class ForegroundService extends Service {
 
     @Override
     public void onDestroy() {
+        Context context = getApplicationContext();
+        sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("hour", 12);
         super.onDestroy();
     }
     @Nullable

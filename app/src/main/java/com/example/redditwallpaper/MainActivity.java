@@ -10,7 +10,13 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -20,6 +26,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     CheckBox checkBoxHD;
     CheckBox checkBoxPortrait;
     CheckBox checkBoxAuto;
+    SeekBar brightnessSeekBar;
 
     public static SharedPreferences sharedPreferences;
 
@@ -82,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         checkBoxHD = findViewById(R.id.checkBoxHD);
         checkBoxPortrait =  findViewById(R.id.checkBoxPortrait);
         checkBoxAuto = findViewById(R.id.checkBoxAuto);
+
+        brightnessSeekBar = findViewById(R.id.seekBarBright);
 
         context = getApplicationContext();
         view = getWindow().getDecorView().getRootView();
@@ -154,12 +164,33 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                int brightness = brightnessSeekBar.getProgress();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("brightness", brightness);
+                editor.apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         sharedPreferences = getSharedPreferences(preference, Context.MODE_PRIVATE);
 
         subreddit.setText(sharedPreferences.getString(selectedSubreddit, "subreddit"));
         checkBoxHD.setChecked(sharedPreferences.getBoolean("boolHD", false));
         checkBoxPortrait.setChecked(sharedPreferences.getBoolean("boolPortrait", false));
         checkBoxAuto.setChecked(sharedPreferences.getBoolean("boolAuto", false));
+        brightnessSeekBar.setProgress(sharedPreferences.getInt("brightness", 100));
 
         String prevURLsString = sharedPreferences.getString("prevURLsString", "");
         String[] prevURLsArray = prevURLsString.split(",");
@@ -185,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
 
         float scaledScreenHeight = screenHeight * (float)1.0;
-        float scaledScreenWidth = screenWidth * (float)1.05;
+        float scaledScreenWidth = screenWidth * (float)1.02;
 
         // gets raw image dimensions
         float imageHeight = bitmap.getHeight();
@@ -288,7 +319,59 @@ public class MainActivity extends AppCompatActivity {
         return dl_path;
     }
 
+    public static Bitmap changeBitmapFilter(Bitmap bmp){
+
+        final View staticView = getView();
+
+        SeekBar brightnessSeekBar = staticView.findViewById(R.id.seekBarBright);
+        int brightness = brightnessSeekBar.getProgress();
+
+        brightness = brightness - 50;
+
+        ColorMatrix cm = new ColorMatrix(new float[]
+                {
+                        1, 0, 0, 0, brightness,
+                        0, 1, 0, 0, brightness,
+                        0, 0, 1, 0, brightness,
+                        0, 0, 0, 1, 0
+                });
+
+        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
+
+        Canvas canvas = new Canvas(ret);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+        canvas.drawBitmap(bmp, 0, 0, paint);
+
+        return ret;
+    }
+
+    public static boolean isNetworkConnected(Context c) {
+        WifiManager wifiMgr = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
+        if (wifiMgr.isWifiEnabled()) { // Wi-Fi adapter is ON
+
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+
+            if( wifiInfo.getNetworkId() == -1 ){
+                return false; // Not connected to an access point
+            }
+            return true; // Connected to an access point
+        }
+        else {
+            return false; // Wi-Fi adapter is OFF
+        }
+    }
+
     public static void fullWallpaper(){
+
+        final Context staticContext = getContext();
+        boolean connected = isNetworkConnected(staticContext);
+        if (!connected){
+            showNotification("RedditWallpaper", "No wifi connection.");
+            Toast.makeText(staticContext, "No wifi connection.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Thread thread = new Thread(new Runnable() {
 
@@ -304,8 +387,8 @@ public class MainActivity extends AppCompatActivity {
                     File Image = new File(dlPath);
 
                     bitmap = BitmapFactory.decodeFile(Image.getAbsolutePath());
-                    setRedditWallpaper(bitmap);
-
+                    Bitmap bitmap_filtered = changeBitmapFilter(bitmap);
+                    setRedditWallpaper(bitmap_filtered);
 
                     System.out.println("Set Background!");
 

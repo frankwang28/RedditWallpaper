@@ -83,7 +83,7 @@ public class RedditImageGrabber {
         // construct the XML document tree to navigate
         Document rss = null;
 
-        // 429 error handling due to hight amounts of reddit requests
+        // 429 error handling due to high amounts of reddit requests
         boolean error429 = true;
         while(error429) {
             try {
