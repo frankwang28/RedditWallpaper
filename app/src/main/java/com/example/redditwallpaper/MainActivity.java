@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     else {
                         stopService();
+                        editor.putInt("hour", 12);
                         System.out.println("Removed Service");
                     }
                 }

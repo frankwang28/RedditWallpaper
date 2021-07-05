@@ -25,7 +25,7 @@ public class ForegroundService extends Service {
     public static final String preference = "pref";
 
     Timer timer = new Timer();
-    int hour = 12;
+    int hour;
     int interval = 1000 * 60 * 60;
 
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
@@ -51,12 +51,14 @@ public class ForegroundService extends Service {
                     sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putInt("hour", hour);
+                    editor.apply();
                 } else{
                     hour -= 1;
                     Context context = getApplicationContext();
                     sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putInt("hour", hour);
+                    editor.apply();
                 }
 
                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -85,10 +87,6 @@ public class ForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        Context context = getApplicationContext();
-        sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("hour", 12);
         super.onDestroy();
     }
     @Nullable
