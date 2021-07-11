@@ -11,10 +11,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -60,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     CheckBox checkBoxPortrait;
     CheckBox checkBoxAuto;
     SeekBar brightnessSeekBar;
+    SeekBar contrastSeekbar;
+    SeekBar saturationSeekbar;
 
     public static SharedPreferences sharedPreferences;
 
@@ -92,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         checkBoxAuto = findViewById(R.id.checkBoxAuto);
 
         brightnessSeekBar = findViewById(R.id.seekBarBright);
+        contrastSeekbar = findViewById(R.id.seekBarContrast);
+        saturationSeekbar = findViewById(R.id.seekBarSat);
 
         context = getApplicationContext();
         view = getWindow().getDecorView().getRootView();
@@ -159,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         stopService();
                         editor.putInt("hour", 12);
                         System.out.println("Removed Service");
+                        editor.apply();
                     }
                 }
                 }
@@ -185,13 +193,56 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        contrastSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                int contrast = contrastSeekbar.getProgress();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("contrast", contrast);
+                editor.apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        saturationSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                int saturation = saturationSeekbar.getProgress();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("saturation", saturation);
+                editor.apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         sharedPreferences = getSharedPreferences(preference, Context.MODE_PRIVATE);
 
         subreddit.setText(sharedPreferences.getString(selectedSubreddit, "subreddit"));
         checkBoxHD.setChecked(sharedPreferences.getBoolean("boolHD", false));
         checkBoxPortrait.setChecked(sharedPreferences.getBoolean("boolPortrait", false));
         checkBoxAuto.setChecked(sharedPreferences.getBoolean("boolAuto", false));
-        brightnessSeekBar.setProgress(sharedPreferences.getInt("brightness", 100));
+
+        brightnessSeekBar.setProgress(sharedPreferences.getInt("brightness", 25));
+        contrastSeekbar.setProgress(sharedPreferences.getInt("contrast", 25));
+        saturationSeekbar.setProgress(sharedPreferences.getInt("saturation", 25));
 
         String prevURLsString = sharedPreferences.getString("prevURLsString", "");
         String[] prevURLsArray = prevURLsString.split(",");
@@ -325,43 +376,41 @@ public class MainActivity extends AppCompatActivity {
         final View staticView = getView();
 
         SeekBar brightnessSeekBar = staticView.findViewById(R.id.seekBarBright);
+        SeekBar contrastSeekBar = staticView.findViewById(R.id.seekBarContrast);
+        SeekBar saturationSeekBar = staticView.findViewById(R.id.seekBarSat);
+
         int brightness = brightnessSeekBar.getProgress();
+        int contrast = contrastSeekBar.getProgress();
+        int saturation = saturationSeekBar.getProgress();
 
-        brightness = brightness - 50;
-
-        ColorMatrix cm = new ColorMatrix(new float[]
-                {
-                        1, 0, 0, 0, brightness,
-                        0, 1, 0, 0, brightness,
-                        0, 0, 1, 0, brightness,
-                        0, 0, 0, 1, 0
-                });
+        brightness = brightness - 25;
+        contrast = contrast - 25;
+        saturation = saturation - 25;
 
         Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
 
         Canvas canvas = new Canvas(ret);
 
         Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+
+        ColorFilterGenerator colorFilterGenerator = new ColorFilterGenerator();
+        ColorFilter cmf = colorFilterGenerator.adjustColor(brightness, contrast, saturation);
+
+        paint.setColorFilter(cmf);
         canvas.drawBitmap(bmp, 0, 0, paint);
 
         return ret;
     }
 
     public static boolean isNetworkConnected(Context c) {
-        WifiManager wifiMgr = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
-        if (wifiMgr.isWifiEnabled()) { // Wi-Fi adapter is ON
+        final Context staticContext = getContext();
+        ConnectivityManager cm =
+                (ConnectivityManager)staticContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-
-            if( wifiInfo.getNetworkId() == -1 ){
-                return false; // Not connected to an access point
-            }
-            return true; // Connected to an access point
-        }
-        else {
-            return false; // Wi-Fi adapter is OFF
-        }
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
     }
 
     public static void fullWallpaper(){

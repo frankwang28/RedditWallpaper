@@ -45,13 +45,13 @@ public class ForegroundService extends Service {
             @Override
             public void run() {
                 if (hour == 1) {
-                    MainActivity.fullWallpaper();
                     hour = 12;
                     Context context = getApplicationContext();
                     sharedPreferences = context.getSharedPreferences(preference, context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putInt("hour", hour);
                     editor.apply();
+                    MainActivity.fullWallpaper();
                 } else{
                     hour -= 1;
                     Context context = getApplicationContext();
