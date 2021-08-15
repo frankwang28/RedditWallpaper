@@ -1,4 +1,4 @@
-package com.example.redditwallpaper;
+package com.fwang28.redditwallpaper;
 
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package com.example.redditwallpaper;
+package com.fwang28.redditwallpaper;
 
 import org.junit.Test;
 

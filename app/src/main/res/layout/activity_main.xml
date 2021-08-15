@@ -58,7 +58,43 @@
             android:text="Get Background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/infoButtonBackground"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="225dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/question_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/backgroundButton"
+            style="?android:attr/borderlessButtonStyle"
+            tools:layout_editor_absoluteY="224dp"
+            android:tooltipText="Sets the wallpaper."/>
+
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="280dp"
+            android:text="Set Background Again"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/infoButtonReset"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="280dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/question_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/resetButton"
+            style="?android:attr/borderlessButtonStyle"
+            tools:layout_editor_absoluteY="224dp"
+            android:tooltipText="Sets the wallpaper again if the current wallpaper was sized incorrectly." />
 
         <TextView
             android:id="@+id/textView3"
@@ -76,41 +112,80 @@
             android:id="@+id/checkBoxHD"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="300dp"
+            android:layout_marginTop="350dp"
             android:text="Force HD"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/infoButtonHD"
+            android:layout_width="48dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="350dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/question_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/checkBoxHD"
+            style="?android:attr/borderlessButtonStyle"
+            tools:layout_editor_absoluteY="224dp"
+            android:tooltipText="Forces image to have higher resolution than screen" />
+
         <CheckBox
             android:id="@+id/checkBoxPortrait"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="350dp"
+            android:layout_marginTop="400dp"
             android:text="Force Portrait"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/infoButtonPortrait"
+            android:layout_width="48dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="400dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/question_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/checkBoxPortrait"
+            style="?android:attr/borderlessButtonStyle"
+            tools:layout_editor_absoluteY="224dp"
+            android:tooltipText="Forces the image to have a greater height than width." />
+
         <CheckBox
             android:id="@+id/checkBoxAuto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="400dp"
+            android:layout_marginTop="450dp"
             android:text="Auto Update"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/infoButtonAuto"
+            android:layout_width="48dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="450dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/question_circle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/checkBoxAuto"
+            style="?android:attr/borderlessButtonStyle"
+            tools:layout_editor_absoluteY="224dp"
+            android:tooltipText="Automatically updates to a new wallpaper every 12 hours." />
+
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="500dp"
+            android:layout_marginTop="550dp"
             android:gravity="center"
             android:text="Brightness:"
             android:textSize="16dp"
@@ -122,7 +197,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="500dp"
+            android:layout_marginTop="550dp"
             android:layout_marginEnd="24dp"
             android:max="50"
             android:progress="25"
@@ -135,7 +210,7 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="550dp"
+            android:layout_marginTop="600dp"
             android:gravity="center"
             android:text="Contrast:"
             android:textSize="16dp"
@@ -147,7 +222,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="550dp"
+            android:layout_marginTop="600dp"
             android:layout_marginEnd="24dp"
             android:max="50"
             android:progress="25"
@@ -160,7 +235,7 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="600dp"
+            android:layout_marginTop="650dp"
             android:gravity="center"
             android:text="Saturation:"
             android:textSize="16dp"
@@ -172,14 +247,13 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="600dp"
+            android:layout_marginTop="650dp"
             android:layout_marginEnd="24dp"
             android:max="50"
             android:progress="25"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView4"
             app:layout_constraintTop_toTopOf="parent" />
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
